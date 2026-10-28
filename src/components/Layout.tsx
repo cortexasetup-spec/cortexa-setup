@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import cortexaLogo from '../assets/Logo.png'
 import { MoonIcon, SunIcon } from './Icons'
+import { useAuth } from '../context/AuthContext'
 
 const NAV = [
   { to: '/', label: 'Home' },
@@ -26,6 +27,7 @@ export default function Layout() {
   const [scrolled, setScrolled] = useState(false)
   const [theme, setTheme] = useState<Theme>(getInitialTheme)
   const location = useLocation()
+  const { user, signOut } = useAuth()
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -77,6 +79,25 @@ export default function Layout() {
                   {n.label}
                 </NavLink>
               ))}
+              {user ? (
+                <button
+                  type="button"
+                  className="site-nav__link nav-logout"
+                  onClick={() => {
+                    void signOut()
+                    setMenuOpen(false)
+                  }}
+                >
+                  Log out
+                </button>
+              ) : (
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) => `site-nav__link${isActive ? ' is-active' : ''}`}
+                >
+                  Log in
+                </NavLink>
+              )}
             </nav>
 
             <button
