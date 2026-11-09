@@ -26,6 +26,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     let active = true
 
+    // Supabase signs the user in from the confirmation link. Cortexa wants the
+    // user to log in manually after verifying, so drop that session and send
+    // them to the login page with a notice.
+    const hash = window.location.hash || ''
+    const search = window.location.search || ''
+    const justConfirmed =
+      /(^|[#&?])type=signup/.test(hash) || /(^|[?&])type=signup/.test(search)
+
+    if (justConfirmed) {
+      supabase.auth
+        .signOut()
+        .catch(() => undefined)
+        .finally(() => {
+          window.location.replace('/login?verified=1')
+        })
+      return () => {
+        active = false
+      }
+    }
+
     supabase.auth.getSession().then(({ data }) => {
       if (!active) return
       setSession(data.session)

@@ -1,11 +1,13 @@
 import { useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import Reveal from '../components/Reveal'
 import { useAuth } from '../context/AuthContext'
 
 export default function Login() {
   const { signIn, configured } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const justVerified = searchParams.get('verified') === '1'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -32,6 +34,12 @@ export default function Login() {
             <span className="hero__eyebrow">Account</span>
             <h1 className="auth-title">Welcome back</h1>
             <p className="auth-sub">Log in to your Cortexa workspace.</p>
+
+            {justVerified && (
+              <div className="auth-note auth-note--ok">
+                Email verified. Log in to continue.
+              </div>
+            )}
 
             {!configured && (
               <div className="auth-note auth-note--warn">
